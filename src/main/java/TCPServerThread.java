@@ -3,28 +3,43 @@ import java.util.*;
 import java.io.*;
 
 public class TCPServerThread extends Thread {
-    protected DatagramSocket socket = null;
+    protected ServerSocket socket = null;
     protected BufferedReader in = null;
     protected boolean moreQuotes = true;
 
-    public QuoteServerThread() throws IOException {
-        this("QuoteServerThread");
+    public TCPServerThread() throws IOException {
+        this("TCPServerThread");
     }
 
-    public QuoteServerThread(String name) throws IOException {
+    public TCPServerThread(String name) throws IOException {
         super(name);
-        socket = new DatagramSocket(4445);
+        socket = new ServerSocket(4445);
 
         try {
-            in = new BufferedReader(new FileReader("one-liners.txt"));
+            in = new BufferedReader(new FileReader("test.txt"));
         } catch (FileNotFoundException e) {
-            System.err.println("Could not open quote file. Serving time instead.");
+            System.err.println("Could not open  file. Serving time instead.");
         }
     }
 
-    public void run() {
+    public void run() throws  {
+        while(true){
+            Socket sock = null;
+            try {
+                sock = socket.accept();
+                OutputStream os = sock.getOutputStream();
+                InputStream is = sock.getInputStream();
+                new TCPServerThread().receiveFile(is);
+                sock.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        while (moreQuotes) {
+
+        }
+        /*while (moreQuotes) {
             try {
                 byte[] buf = new byte[256];
 
@@ -50,21 +65,39 @@ public class TCPServerThread extends Thread {
                 e.printStackTrace();
                 moreQuotes = false;
             }
-        }
+        }*/
         socket.close();
     }
+    public void receiveFile(InputStream is,String name) throws Exception{
+        int filesize = 6022386;
+        int bytesRead;
+        int current = 0;
+        byte[] byteArray = new byte[filesize];
 
-    protected String getNextQuote() {
-        String returnValue = null;
-        try {
-            if ((returnValue = in.readLine()) == null) {
-                in.close();
-                moreQuotes = false;
-                returnValue = "No more quotes. Goodbye.";
-            }
-        } catch (IOException e) {
-            returnValue = "IOException occurred in server.";
-        }
-        return returnValue;
+        FileOutputStream fos = new FileOutputStream(name);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        bytesRead = is.read(byteArray, 0, byteArray.length);
+        current = bytesRead;
+
+        do {
+            bytesRead = is.read(byteArray, current,
+                    (byteArray.length - current));
+            if (bytesRead >= 0)
+                current += bytesRead;
+        } while (bytesRead > -1);
+
+        bos.write(byteArray, 0, current);
+        bos.flush();
+        bos.close();
     }
-}
+    public void send(OutputStream os, String filename) throws Exception {
+        // sendfile
+        String filePath = "".concat(filename);
+        File myFile = new File(filePath);
+        byte[] byteArray = new byte[(int) myFile.length() + 1];
+        FileInputStream fis = new FileInputStream(myFile);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        bis.read(byteArray, 0, byteArray.length)
+        os.write(byteArray, 0, byteArray.length);
+        os.flush();
+    }
