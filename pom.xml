@@ -25,6 +25,7 @@
                         <manifest>
                             <!-- Jar file entry point -->
                             <mainClass>TCPServer</mainClass>
+
                         </manifest>
                     </archive>
                 </configuration>
