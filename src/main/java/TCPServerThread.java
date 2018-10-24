@@ -28,8 +28,9 @@ public class TCPServerThread extends Thread {
             try {
                 sock = socket.accept();
                 OutputStream os = sock.getOutputStream();
+                new TCPServerThread().send(os,);
                 InputStream is = sock.getInputStream();
-                new TCPServerThread().receiveFile(is);
+                //new TCPServerThread().receiveFile(is,"test.txt");
                 sock.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -92,12 +93,12 @@ public class TCPServerThread extends Thread {
     }
     public void send(OutputStream os, String filename) throws Exception {
         // sendfile
-        String filePath = "".concat(filename);
+        String filePath = "C:\\Users\\andre\\Documents\\GitHub\\TCP_UDP\\target\\files".concat(filename);
         File myFile = new File(filePath);
         byte[] byteArray = new byte[(int) myFile.length() + 1];
         FileInputStream fis = new FileInputStream(myFile);
         BufferedInputStream bis = new BufferedInputStream(fis);
-        bis.read(byteArray, 0, byteArray.length)
+        bis.read(byteArray, 0, byteArray.length);
         os.write(byteArray, 0, byteArray.length);
         os.flush();
     }
