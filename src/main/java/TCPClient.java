@@ -33,7 +33,7 @@ public class TCPClient {
 
         socket.close();*/
 
-        Socket socket = new Socket(hostname, 2001);
+        Socket socket = new Socket(hostname, 15123);
         System.out.println("Setting up connection...");
         InputStream is = socket.getInputStream();
         try {
@@ -43,6 +43,7 @@ public class TCPClient {
         }
         OutputStream os = socket.getOutputStream();
         socket.close();
+        System.out.println("File received?...");
     }
 
     void sendFiles(OutputStream os, String path) throws Exception {

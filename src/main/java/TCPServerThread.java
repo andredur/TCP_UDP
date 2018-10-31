@@ -16,19 +16,19 @@ public class TCPServerThread extends Thread {
         socket = new ServerSocket(4445);
 
         try {
-            in = new BufferedReader(new FileReader("test.txt"));
+            in = new BufferedReader(new FileReader("tcp"));
         } catch (FileNotFoundException e) {
             System.err.println("Could not open  file. Serving time instead.");
         }
     }
 
-    public void run() throws  {
-        while(true){
+    public void run() {
+        while (true) {
             Socket sock = null;
             try {
                 sock = socket.accept();
                 OutputStream os = sock.getOutputStream();
-                new TCPServerThread().send(os,);
+                new TCPServerThread().send(os, "tcp");
                 InputStream is = sock.getInputStream();
                 //new TCPServerThread().receiveFile(is,"test.txt");
                 sock.close();
@@ -38,38 +38,10 @@ public class TCPServerThread extends Thread {
                 e.printStackTrace();
             }
 
-
         }
-        /*while (moreQuotes) {
-            try {
-                byte[] buf = new byte[256];
-
-                // receive request
-                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                socket.receive(packet);
-
-                // figure out response
-                String dString = null;
-                if (in == null)
-                    dString = new Date().toString();
-                else
-                    dString = getNextQuote();
-
-                buf = dString.getBytes();
-
-                // send the response to the client at "address" and "port"
-                InetAddress address = packet.getAddress();
-                int port = packet.getPort();
-                packet = new DatagramPacket(buf, buf.length, address, port);
-                socket.send(packet);
-            } catch (IOException e) {
-                e.printStackTrace();
-                moreQuotes = false;
-            }
-        }*/
-        socket.close();
     }
-    public void receiveFile(InputStream is,String name) throws Exception{
+
+    public void receiveFile(InputStream is, String name) throws Exception {
         int filesize = 6022386;
         int bytesRead;
         int current = 0;
@@ -91,9 +63,10 @@ public class TCPServerThread extends Thread {
         bos.flush();
         bos.close();
     }
+
     public void send(OutputStream os, String filename) throws Exception {
         // sendfile
-        String filePath = "C:\\Users\\andre\\Documents\\GitHub\\TCP_UDP\\target\\files".concat(filename);
+        String filePath = "E:\\".concat(filename);
         File myFile = new File(filePath);
         byte[] byteArray = new byte[(int) myFile.length() + 1];
         FileInputStream fis = new FileInputStream(myFile);
@@ -102,3 +75,4 @@ public class TCPServerThread extends Thread {
         os.write(byteArray, 0, byteArray.length);
         os.flush();
     }
+}
